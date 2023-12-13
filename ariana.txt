@@ -1,0 +1,8 @@
+data types/variables/memory-2
+2)flows-2
+3)arrays-2
+4)loops-3
+5)string-3
+6)functions-3
+7)data types-2
+8)OOP-2
