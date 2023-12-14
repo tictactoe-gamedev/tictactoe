@@ -8,6 +8,7 @@ public class ExampleA : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Some Comment
         int age = 40; 
         
         Debug.Log("My age is : " + age);
