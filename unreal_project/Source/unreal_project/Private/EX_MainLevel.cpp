@@ -18,4 +18,7 @@ void AEX_MainLevel::BeginPlay()
 	AEX_GameMode* gameMode = Cast<AEX_GameMode>(MyGameMode);
 
 	checkf(gameMode!=nullptr, TEXT("WE JUST COULDNT CAST IT HEEELP"));
+
+	int a = 64;
+	UE_LOG(LogTemp,Warning, TEXT("(%d) Max Sphere count for this level is %d"),a,gameMode->GetMaximumSphereCount());
 }

@@ -18,5 +18,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<AActor> Sphere;
 
+	UPROPERTY(EditAnywhere)
+	FText MyText;
+	
 	virtual void BeginPlay() override;
 };

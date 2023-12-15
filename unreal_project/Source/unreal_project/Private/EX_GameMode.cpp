@@ -4,6 +4,11 @@
 #include "EX_GameMode.h"
 
 
+int AEX_GameMode::GetMaximumSphereCount()
+{
+	return MaximumSphereCount;
+}
+
 void AEX_GameMode::BeginPlay()
 {
 	Super::BeginPlay();

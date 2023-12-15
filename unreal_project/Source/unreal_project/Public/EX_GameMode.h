@@ -13,6 +13,9 @@ UCLASS()
 class UNREAL_PROJECT_API AEX_GameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	int GetMaximumSphereCount();
 	
 protected:
 	UPROPERTY(EditAnywhere)
