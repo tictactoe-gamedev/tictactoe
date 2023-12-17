@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cubePrefab: {fileID: 2832954269977298943, guid: 4236bc9135322fe4fb05b89f8b36ff8c, type: 3}
   universeSize: {x: 10, y: 1, z: 5}
+  maxVoxels: 10
 --- !u!4 &198037444
 Transform:
   m_ObjectHideFlags: 0
