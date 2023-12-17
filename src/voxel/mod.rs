@@ -105,7 +105,7 @@ fn verify_collision_on_voxel_spawn(
             world_config.x_min.abs_diff(world_config.x_max + 1)
                 * world_config.z_min.abs_diff(world_config.z_max + 1),
         ) {
-            dbg!(voxel_count) >= dbg!(world_size)
+            voxel_count >= world_size
         } else {
             bevy::log::error!("Failed to calculate world size.");
             true
