@@ -1,19 +1,19 @@
-public record Voxel
+public abstract record Voxel
 {
     public int Amount { get; }
-    public record GoldVoxel : Voxel
+    public sealed record GoldVoxel : Voxel
     {
         public GoldVoxel(int amount) : base(amount) { }
     }
-    public record SilverVoxel : Voxel
+    public sealed record SilverVoxel : Voxel
     {
         public SilverVoxel(int amount) : base(amount) { }
     }
-    public record BronzeVoxel : Voxel
+    public sealed record BronzeVoxel : Voxel
     {
         public BronzeVoxel(int amount) : base(amount) { }
     }
-    public record IronVoxel : Voxel
+    public sealed record IronVoxel : Voxel
     {
         public IronVoxel(int amount) : base(amount) { }
     }
