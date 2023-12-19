@@ -2,22 +2,35 @@ using UnityEngine;
 
 public class Voxel : MonoBehaviour
 {
-    private int type;
-    private int amount;
+    public int Type { get; private set; }
+    public int Amount { get; private set; }
 
-    public int Type
-    {
-        get { return type; }
-    }
-
-    public int Amount
-    {
-        get { return amount; }
-    }
+    public static int goldVoxelCount = 0;
+    public static int silverVoxelCount = 0;
+    public static int bronzeVoxelCount = 0;
+    public static int platinumVoxelCount = 0;
 
     public void Initialize(int voxelType, int voxelAmount)
     {
-        type = voxelType;
-        amount = voxelAmount;
+        Type = voxelType;
+        Amount = voxelAmount;
+        
+        switch(Type)
+        {
+            case 0:
+                goldVoxelCount++;
+                break;
+            case 1:
+                silverVoxelCount++; 
+                break;
+            case 2:
+                bronzeVoxelCount++; 
+                break;
+            case 3:
+                platinumVoxelCount++; 
+                break;
+            default:
+                break;
+        }
     }
 }

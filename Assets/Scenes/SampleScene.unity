@@ -339,9 +339,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voxelPrefab: {fileID: 1187920126463343248, guid: ea88b3353d8209b41ab066903efef4f7, type: 3}
-  universeSizeX: 5
-  universeSizeY: 3
-  universeSizeZ: 1
+  universeSize: {x: 0, y: 0, z: 0}
+  maxVoxelCount: 20
 --- !u!4 &1938257187
 Transform:
   m_ObjectHideFlags: 0
