@@ -10,6 +10,12 @@ public class FinecraftGod : MonoBehaviour
 
     private int totalVoxelCount => Voxel.goldVoxelCount + Voxel.silverVoxelCount + Voxel.bronzeVoxelCount + Voxel.platinumVoxelCount;
 
+    void Start()
+    {
+        universeSize = new Vector3(Random.Range(1, 10), Random.Range(1, 10), Random.Range(1, 10));
+        Debug.Log($"World Created: X: {universeSize.x}, Y: {universeSize.y}, Z:{universeSize.z}");
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
@@ -28,10 +34,11 @@ public class FinecraftGod : MonoBehaviour
         }
 
         int typeRandom = Random.Range(0, 4);
-        int amountRandom = Random.Range(0, 10);
-        float xPos = Mathf.RoundToInt(Random.Range(-universeSize.x * 10, (universeSize.x + 1) * 10));
-        float yPos = Mathf.RoundToInt(Random.Range(-universeSize.y * 10, (universeSize.y + 1) * 10));
-        float zPos = Mathf.RoundToInt(Random.Range(-universeSize.z * 10, (universeSize.z + 1) * 10));
+        int amountRandom = Random.Range(1, 10);
+        
+        float xPos = Mathf.RoundToInt(Random.Range(-universeSize.x, universeSize.x));
+        float yPos = Mathf.RoundToInt(Random.Range(-universeSize.y, universeSize.y));
+        float zPos = Mathf.RoundToInt(Random.Range(-universeSize.z, universeSize.z));
 
         Debug.Log($"Coordinates: X: {xPos}, Y: {yPos}, Z: {zPos}");
 
