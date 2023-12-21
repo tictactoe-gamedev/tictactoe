@@ -7,6 +7,6 @@ use bevy::{
 
 #[derive(Debug, Event)]
 pub enum VoxelEvents {
-    SpawnVoxel(u64, f32, f32, Handle<Mesh>, Handle<StandardMaterial>),
+    SpawnVoxel(u32, f32, f32, Handle<Mesh>, Handle<StandardMaterial>),
     DespawnVoxel(Entity),
 }

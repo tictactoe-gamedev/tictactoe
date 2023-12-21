@@ -69,7 +69,7 @@ fn create_voxel_on_key_press(
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelTypeAndTransform(u64, f32, f32);
+struct CreateVoxelTypeAndTransform(u32, f32, f32);
 
 fn get_voxel_type_and_position(
     mut entropy: ResMut<GlobalEntropy<ChaCha8Rng>>,
@@ -78,7 +78,7 @@ fn get_voxel_type_and_position(
     mut event_writer: EventWriter<CreateVoxelTypeAndTransform>,
 ) {
     event_writer.send_batch(event_reader.read().map(|_| {
-        let voxel_type = entropy.next_u64() % 4;
+        let voxel_type = entropy.next_u32() % 4;
         let x =
             ((entropy.next_u32() % world_config.world_length()) as i32 + world_config.x_min) as f32;
         let z =
@@ -88,7 +88,7 @@ fn get_voxel_type_and_position(
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelVerifyCollision(u64, f32, f32);
+struct CreateVoxelVerifyCollision(u32, f32, f32);
 
 fn verify_collision_on_voxel_spawn(
     world_config: Res<WorldConfiguration>,
@@ -127,7 +127,7 @@ fn verify_collision_on_voxel_spawn(
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelMesh(u64, f32, f32, Handle<Mesh>);
+struct CreateVoxelMesh(u32, f32, f32, Handle<Mesh>);
 
 fn get_voxel_mesh(
     asset_server: Res<AssetServer>,
