@@ -99,14 +99,16 @@ fn verify_collision_on_voxel_spawn(
 ) {
     let voxel_count = voxels.iter().count();
     for event in event_reader.read() {
-        if if let Ok(world_size) =
+        let is_world_full = if let Ok(world_size) =
             usize::try_from(world_config.world_length() * world_config.world_width())
         {
             voxel_count >= world_size
         } else {
             bevy::log::error!("Failed to calculate world size.");
             true
-        } {
+        };
+
+        if is_world_full {
             bevy::log::error!("World is already full of voxels.");
         } else {
             let CreateVoxelTypeAndTransform(voxel_type, voxel_x, voxel_z) = event;
