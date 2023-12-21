@@ -79,12 +79,10 @@ fn get_voxel_type_and_position(
 ) {
     event_writer.send_batch(event_reader.read().map(|_| {
         let voxel_type = entropy.next_u64() % 4;
-        let x = ((entropy.next_u32() % (world_config.x_min.abs_diff(world_config.x_max + 1)))
-            as i32
-            + world_config.x_min) as f32;
-        let z = ((entropy.next_u32() % (world_config.z_min.abs_diff(world_config.z_max + 1)))
-            as i32
-            + world_config.z_min) as f32;
+        let x =
+            ((entropy.next_u32() % world_config.world_length()) as i32 + world_config.x_min) as f32;
+        let z =
+            ((entropy.next_u32() % world_config.world_width()) as i32 + world_config.z_min) as f32;
         CreateVoxelTypeAndTransform(voxel_type, x, z)
     }));
 }
@@ -101,10 +99,9 @@ fn verify_collision_on_voxel_spawn(
 ) {
     let voxel_count = voxels.iter().count();
     for event in event_reader.read() {
-        if if let Ok(world_size) = usize::try_from(
-            world_config.x_min.abs_diff(world_config.x_max + 1)
-                * world_config.z_min.abs_diff(world_config.z_max + 1),
-        ) {
+        if if let Ok(world_size) =
+            usize::try_from(world_config.world_length() * world_config.world_width())
+        {
             voxel_count >= world_size
         } else {
             bevy::log::error!("Failed to calculate world size.");

@@ -37,6 +37,16 @@ pub struct WorldConfiguration {
     pub z_max: i32,
 }
 
+impl WorldConfiguration {
+    pub fn world_length(&self) -> u32 {
+        self.x_min.abs_diff(self.x_max + 1)
+    }
+
+    pub fn world_width(&self) -> u32 {
+        self.z_min.abs_diff(self.z_max + 1)
+    }
+}
+
 impl Default for WorldConfiguration {
     fn default() -> Self {
         Self {
