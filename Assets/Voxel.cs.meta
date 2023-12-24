@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dcf55cdfb0c727e48a13a8e8a74598ac
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - goldVoxelPrefab: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
+  - silverVoxelPrefab: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
+  - bronzeVoxelPrefab: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
+  - ironVoxelPrefab: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
