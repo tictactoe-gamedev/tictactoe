@@ -69,7 +69,7 @@ fn create_voxel_on_key_press(
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelTypeAndTransform(u64, f32, f32);
+struct CreateVoxelTypeAndTransform(u32, f32, f32);
 
 fn get_voxel_type_and_position(
     mut entropy: ResMut<GlobalEntropy<ChaCha8Rng>>,
@@ -78,19 +78,17 @@ fn get_voxel_type_and_position(
     mut event_writer: EventWriter<CreateVoxelTypeAndTransform>,
 ) {
     event_writer.send_batch(event_reader.read().map(|_| {
-        let voxel_type = entropy.next_u64() % 4;
-        let x = ((entropy.next_u32() % (world_config.x_min.abs_diff(world_config.x_max + 1)))
-            as i32
-            + world_config.x_min) as f32;
-        let z = ((entropy.next_u32() % (world_config.z_min.abs_diff(world_config.z_max + 1)))
-            as i32
-            + world_config.z_min) as f32;
+        let voxel_type = entropy.next_u32() % 4;
+        let x =
+            ((entropy.next_u32() % world_config.world_length()) as i32 + world_config.x_min) as f32;
+        let z =
+            ((entropy.next_u32() % world_config.world_width()) as i32 + world_config.z_min) as f32;
         CreateVoxelTypeAndTransform(voxel_type, x, z)
     }));
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelVerifyCollision(u64, f32, f32);
+struct CreateVoxelVerifyCollision(u32, f32, f32);
 
 fn verify_collision_on_voxel_spawn(
     world_config: Res<WorldConfiguration>,
@@ -101,15 +99,16 @@ fn verify_collision_on_voxel_spawn(
 ) {
     let voxel_count = voxels.iter().count();
     for event in event_reader.read() {
-        if if let Ok(world_size) = usize::try_from(
-            world_config.x_min.abs_diff(world_config.x_max + 1)
-                * world_config.z_min.abs_diff(world_config.z_max + 1),
-        ) {
+        let is_world_full = if let Ok(world_size) =
+            usize::try_from(world_config.world_length() * world_config.world_width())
+        {
             voxel_count >= world_size
         } else {
             bevy::log::error!("Failed to calculate world size.");
             true
-        } {
+        };
+
+        if is_world_full {
             bevy::log::error!("World is already full of voxels.");
         } else {
             let CreateVoxelTypeAndTransform(voxel_type, voxel_x, voxel_z) = event;
@@ -128,7 +127,7 @@ fn verify_collision_on_voxel_spawn(
 }
 
 #[derive(Debug, Event)]
-struct CreateVoxelMesh(u64, f32, f32, Handle<Mesh>);
+struct CreateVoxelMesh(u32, f32, f32, Handle<Mesh>);
 
 fn get_voxel_mesh(
     asset_server: Res<AssetServer>,
