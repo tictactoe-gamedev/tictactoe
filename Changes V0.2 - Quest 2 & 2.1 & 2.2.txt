@@ -7,3 +7,11 @@ Removed switch and used Initialize method instead (with typeRandom and amountRan
 Shortened Voxel class for properties and member variables
 Moved the count for each Voxel in the Voxel class and added the switch for counting each Voxel in the Initialize method
 Changed the Cube (prefab) dimensions from 0.2 to 1
+
+______________________________________________________________________________________________________________________________
+
+Added materials for voxels (bronze, silver, gold and platinum)
+Createplane() method creates a plane on Y=-1 with random X and Z (in a range)
+Each voxels has a chance to spawn (adjustable)
+Implemented the weighted chances to spawn a specific voxel based on the neighbors
+Generating voxel implemented both as auto (for loop) and manual (pressing the K key)
