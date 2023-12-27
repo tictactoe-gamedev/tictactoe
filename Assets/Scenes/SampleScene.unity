@@ -418,12 +418,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voxelPrefab: {fileID: 519937432}
-  worldX: 5
-  worldY: 1
-  worldZ: 3
-  maxVoxels: 5500
+  worldDimensions: {x: 35, y: 4, z: 35}
+  maxVoxels: 12500
   noSpawnProbability: 0.1
-  heightLevelsToProcess: 3
+  heightLevelsToProcess: 4
   minVoxelAmount: 1
   maxVoxelAmount: 11
   voxelTypeData:

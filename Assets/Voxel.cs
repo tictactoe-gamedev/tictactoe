@@ -16,6 +16,8 @@ public class Voxel : MonoBehaviour
     // Modifiers for neighbouring voxel spawns
     public float[] NeighbourModifiers { get; private set; }
 
+    public static int TotalVoxelCount {  get; private set; }
+
     public void Initialize(VoxelType voxelType, int voxelAmount,
          float baseSpawnProbability, float[] neighbourModifiers)
     {
@@ -23,5 +25,11 @@ public class Voxel : MonoBehaviour
         amount = voxelAmount;
         BaseSpawnProbability = baseSpawnProbability;
         NeighbourModifiers = neighbourModifiers;
+        TotalVoxelCount++;
+    }
+
+    void OnDestroy()
+    {
+        TotalVoxelCount--;
     }
 }
