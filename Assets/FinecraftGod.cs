@@ -26,7 +26,7 @@ public class FinecraftGod : MonoBehaviour
     }
 
     [SerializeField] private VoxelGenerationRule[] voxelTypeData;
-    private Voxel[,] voxels;
+    private Voxel[,,] voxels; // the ,, signifies a 3d array
 
     void Awake()
     {
@@ -38,7 +38,7 @@ public class FinecraftGod : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        voxels = new Voxel[(int)worldDimensions.x, (int)worldDimensions.z];
+        voxels = new Voxel[(int)worldDimensions.x, (int)worldDimensions.y, (int)worldDimensions.z];
         Debug.Log($"Voxel array created with dimensions: {worldDimensions.x}x{worldDimensions.y}x{worldDimensions.z}");
     }
 
@@ -62,7 +62,7 @@ public class FinecraftGod : MonoBehaviour
                 Vector3Int position = new Vector3Int(x, currentYLevel, z);
 
                 // checks if there's no voxel at this position and creates one if empty
-                if (voxels[x, z] == null)
+                if (voxels[x, currentYLevel, z] == null)
                     CreateVoxel(position);
             }
         }
@@ -84,7 +84,7 @@ public class FinecraftGod : MonoBehaviour
         // Create the voxel at the chosen position with the chosen type
         Voxel voxel = InstantiateVoxel(position, chosenType);
         // Store the created voxel in an array
-        voxels[position.x, position.z] = voxel;
+        voxels[position.x, position.y, position.z] = voxel;
 
         Debug.Log($"Voxel of type {chosenType} created at {position}.");
     }
@@ -169,9 +169,9 @@ public class FinecraftGod : MonoBehaviour
         {
             var neighbourPos = position + dir;
 
-            if (VoxelIsAtValidPosition(neighbourPos) && voxels[neighbourPos.x, neighbourPos.z] != null)
+            if (VoxelIsAtValidPosition(neighbourPos) && voxels[neighbourPos.x, neighbourPos.y, neighbourPos.z] != null)
             {
-                neighbourTypes.Add(voxels[neighbourPos.x, neighbourPos.z].Type);
+                neighbourTypes.Add(voxels[neighbourPos.x, neighbourPos.y, neighbourPos.z].Type);
             }
         }
 

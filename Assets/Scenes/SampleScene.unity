@@ -382,7 +382,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.65, y: 1, z: -0.35}
+  m_LocalPosition: {x: 16.25, y: 1, z: -3.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -418,8 +418,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voxelPrefab: {fileID: 519937432}
-  worldDimensions: {x: 35, y: 4, z: 35}
-  maxVoxels: 12500
+  worldDimensions: {x: 25, y: 4, z: 25}
+  maxVoxels: 7500
   noSpawnProbability: 0.1
   heightLevelsToProcess: 4
   minVoxelAmount: 1
