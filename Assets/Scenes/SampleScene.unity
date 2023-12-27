@@ -302,13 +302,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.11063806, y: -0, z: -0, w: 0.99386084}
+  m_LocalPosition: {x: 0, y: 5.59, z: -13.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 12.704, y: 0, z: 0}
 --- !u!1 &1938257185
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,7 +340,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   voxelPrefab: {fileID: 1187920126463343248, guid: ea88b3353d8209b41ab066903efef4f7, type: 3}
   universeSize: {x: 0, y: 0, z: 0}
-  maxVoxelCount: 20
+  voxelMaterials:
+  - {fileID: 2100000, guid: 71eef2f15da624b49b32269996908df1, type: 2}
+  - {fileID: 2100000, guid: ea4f7e22ed34b9e49a88e45e7b6bd75b, type: 2}
+  - {fileID: 2100000, guid: cfd13ce34147a5f439552cc1911f3fd4, type: 2}
+  - {fileID: 2100000, guid: bc578cd9748f6064fa29231669b190be, type: 2}
+  maxVoxelCount: 500
+  baseSpawnPossibilities:
+  - 0.4
+  - 0.3
+  - 0.2
+  - 0.1
+  goldSpawnModifiers:
+  - -0.02
+  - 0.02
+  - 0.04
+  - 0.02
+  silverSpawnModifiers:
+  - 0.03
+  - 0.06
+  - 0.03
+  - -0.03
+  bronzeSpawnModifiers:
+  - 0.08
+  - 0.04
+  - -0.04
+  - -0.08
+  platinumSpawnModifiers:
+  - -0.02
+  - -0.01
+  - 0.01
+  - 0.02
 --- !u!4 &1938257187
 Transform:
   m_ObjectHideFlags: 0
