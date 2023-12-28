@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class FinecraftGod : MonoBehaviour
 {
     public static FinecraftGod Instance { get; private set; } // ensure only one FinecraftGod exists
+    public static int TotalVoxelCount {  get; private set; }
 
     [SerializeField] private GameObject voxelPrefab;
     [SerializeField] private Vector3 worldDimensions = new Vector3(5, 1, 3);
@@ -44,49 +45,54 @@ public class FinecraftGod : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K) && Voxel.TotalVoxelCount < maxVoxels)
+        if (Input.GetKeyDown(KeyCode.K) && TotalVoxelCount < maxVoxels)
         {
             Debug.Log("K key press detected. Populating current Y level with voxels.");
-            PopulateCurrentYLevel();
+            PopulateLevel(currentYLevel);
         }
     }
 
-    private void PopulateCurrentYLevel()
+    private void PopulateLevel(int level)
     {
-        Debug.Log($"Populating Y level {currentYLevel} with voxels.");
+        Debug.Log($"Populating Y level {level} with voxels.");
+
         // loops thru every position in current Y level of the world
         for (int x = 0; x < worldDimensions.x; x++)
         {
             for (int z = 0; z < worldDimensions.z; z++)
             {
-                Vector3Int position = new Vector3Int(x, currentYLevel, z);
+                Vector3Int position = new Vector3Int(x, level, z);
 
-                // checks if there's no voxel at this position and creates one if empty
-                if (voxels[x, currentYLevel, z] == null)
-                    CreateVoxel(position);
+                // no spawn probability logic
+                if (Random.value > noSpawnProbability)
+                {
+                    DecideAndCreateVoxel(position);
+                }
+                else
+                {
+                    Debug.Log($"No voxel created at {position} due to no-spawn probability");
+                }
             }
         }
         // After filling up one Y level, moves to the next level
         currentYLevel = (currentYLevel + 1) % heightLevelsToProcess;
-        Debug.Log($"Completed populating Y level {currentYLevel}.");
     }
 
-    void CreateVoxel(Vector3Int position)
+    void DecideAndCreateVoxel(Vector3Int position)
     {
-        // Sometimes decides not to create a voxel
-        if (Random.value <= noSpawnProbability)
+        if (Random.value > noSpawnProbability)
+        {
+            // Choose what type of voxel to create based on nearby voxels
+            Voxel.VoxelType chosenType = ChooseVoxelTypeBasedOnProbability(position);
+            // Create the voxel at the chosen position with the chosen type
+            Voxel voxel = InstantiateVoxel(position, chosenType);
+            // Store the created voxel in an array
+            voxels[position.x, position.y, position.z] = voxel;
+        }
+        else
         {
             Debug.Log($"No voxel created at {position} due to no-spawn probability");
-            return;
         }
-        // Choose what type of voxel to create based on nearby voxels
-        Voxel.VoxelType chosenType = ChooseVoxelTypeBasedOnProbability(position);
-        // Create the voxel at the chosen position with the chosen type
-        Voxel voxel = InstantiateVoxel(position, chosenType);
-        // Store the created voxel in an array
-        voxels[position.x, position.y, position.z] = voxel;
-
-        Debug.Log($"Voxel of type {chosenType} created at {position}.");
     }
 
     private Voxel InstantiateVoxel(Vector3Int position, Voxel.VoxelType voxelType)
@@ -108,6 +114,11 @@ public class FinecraftGod : MonoBehaviour
         return voxelScript;
     }
 
+    void OnDestroy()
+    {
+        TotalVoxelCount--;
+    }
+
     private Voxel.VoxelType ChooseVoxelTypeBasedOnProbability(Vector3Int position)
     {
         // calculate the chance for each voxel type to spawn based on their neighbours
@@ -120,17 +131,16 @@ public class FinecraftGod : MonoBehaviour
 
         // picks a random value
         float randomPoint = Random.value * totalProbability;
-        // checks each voxel type and sees which ones had highest probability of spawning
+        // Cumulative probability check
+        float cumulativeProbability = 0;
         for (int i = 0; i < probabilities.Length; i++)
         {
-            // If our random point is less than the current probability, it found the voxel type
-            if (randomPoint < probabilities[i])
+            cumulativeProbability += probabilities[i];
+            if (randomPoint <= cumulativeProbability)
             {
                 Debug.Log($"Voxel type chosen based on probability: {(Voxel.VoxelType)i}");
                 return (Voxel.VoxelType)i;
-                // Else, subtracts this probability and checks the next voxel type
             }
-            randomPoint -= probabilities[i];
         }
         // 'Gold' picked as the default voxel type
         return Voxel.VoxelType.Gold;
@@ -163,12 +173,17 @@ public class FinecraftGod : MonoBehaviour
         var neighbourTypes = new List<Voxel.VoxelType>();
         var directions = new Vector3Int[] { Vector3Int.up, Vector3Int.down,
                              Vector3Int.left, Vector3Int.right, Vector3Int.forward,
-                             Vector3Int.back };
+                             Vector3Int.back,
+
+        // Checks for voxels in diagonal directions
+        new Vector3Int(1, 1, 1), new Vector3Int(-1, 1, 1), new Vector3Int(1, -1, 1),
+        new Vector3Int(-1, -1, 1), new Vector3Int(1, 1, -1), new Vector3Int(-1, 1, -1),
+        new Vector3Int(1, -1, -1), new Vector3Int(-1, -1, -1)
+    };
 
         foreach (var dir in directions)
         {
             var neighbourPos = position + dir;
-
             if (VoxelIsAtValidPosition(neighbourPos) && voxels[neighbourPos.x, neighbourPos.y, neighbourPos.z] != null)
             {
                 neighbourTypes.Add(voxels[neighbourPos.x, neighbourPos.y, neighbourPos.z].Type);
