@@ -6,7 +6,7 @@ public class FinecraftGod : MonoBehaviour
     public static FinecraftGod Instance { get; private set; } // ensure only one FinecraftGod exists
     public static int TotalVoxelCount {  get; private set; }
 
-    [SerializeField] private GameObject voxelPrefab;
+    [SerializeField] private Voxel voxelPrefab;
     [SerializeField] private Vector3 worldDimensions = new Vector3(5, 1, 3);
     [SerializeField] private int maxVoxels = 20;
     [SerializeField] private float noSpawnProbability = 0.1f;   // Chance of not spawning a voxel, adjustable in the Inspector
@@ -39,6 +39,7 @@ public class FinecraftGod : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        // Direct initialization of the voxel array
         voxels = new Voxel[(int)worldDimensions.x, (int)worldDimensions.y, (int)worldDimensions.z];
         Debug.Log($"Voxel array created with dimensions: {worldDimensions.x}x{worldDimensions.y}x{worldDimensions.z}");
     }
@@ -63,7 +64,7 @@ public class FinecraftGod : MonoBehaviour
             {
                 Vector3Int position = new Vector3Int(x, level, z);
 
-                // no spawn probability logic
+                // noSpawnProbability check
                 if (Random.value > noSpawnProbability)
                 {
                     DecideAndCreateVoxel(position);
@@ -80,25 +81,15 @@ public class FinecraftGod : MonoBehaviour
 
     void DecideAndCreateVoxel(Vector3Int position)
     {
-        if (Random.value > noSpawnProbability)
-        {
-            // Choose what type of voxel to create based on nearby voxels
-            Voxel.VoxelType chosenType = ChooseVoxelTypeBasedOnProbability(position);
-            // Create the voxel at the chosen position with the chosen type
-            Voxel voxel = InstantiateVoxel(position, chosenType);
-            // Store the created voxel in an array
-            voxels[position.x, position.y, position.z] = voxel;
-        }
-        else
-        {
-            Debug.Log($"No voxel created at {position} due to no-spawn probability");
-        }
+        // Directly decide and create voxels
+        Voxel.VoxelType chosenType = ChooseVoxelTypeBasedOnProbability(position);
+        Voxel voxel = InstantiateVoxel(position, chosenType);
+        voxels[position.x, position.y, position.z] = voxel;
     }
 
     private Voxel InstantiateVoxel(Vector3Int position, Voxel.VoxelType voxelType)
     {
-        var voxelObject = Instantiate(voxelPrefab, position, Quaternion.identity); // spawns voxel at the random position without any rotation applied to the voxel object
-        var voxelScript = voxelObject.GetComponent<Voxel>();
+        Voxel voxelScript = Instantiate(voxelPrefab, position, Quaternion.identity); // spawns voxel at the random position without any rotation applied to the voxel object
 
         if (voxelScript)
         {
@@ -142,8 +133,8 @@ public class FinecraftGod : MonoBehaviour
                 return (Voxel.VoxelType)i;
             }
         }
-        // 'Gold' picked as the default voxel type
-        return Voxel.VoxelType.Gold;
+        // 'Undefined' picked as the default voxel type
+        return Voxel.VoxelType.Undefined;
     }
 
     private float[] CalculateInfluencedProbability(Vector3Int position)
