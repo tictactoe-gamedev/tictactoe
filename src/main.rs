@@ -56,6 +56,7 @@ fn main() {
 fn create_camera(mut commands: Commands) {
     let camera_and_light_transform =
         Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
+    let light_transform = Transform::from_xyz(0., 15., 0.).looking_at(Vec3::ZERO, Vec3::Z);
 
     // Camera in 3D space.
     commands.spawn(Camera3dBundle {
@@ -70,7 +71,7 @@ fn create_camera(mut commands: Commands) {
             range: 100.0,
             ..default()
         },
-        transform: camera_and_light_transform,
+        transform: light_transform,
         ..default()
     });
     commands.insert_resource(AmbientLight {
@@ -84,7 +85,7 @@ fn spawn_voxels_on_timer(
     mut elapsed: Local<f64>,
     mut event_writer: EventWriter<SpawnVoxelEvent>,
 ) {
-    const TIMER: f64 = 0.125;
+    const TIMER: f64 = 0.025;
     *elapsed += time.delta_seconds_f64();
     if *elapsed >= TIMER {
         *elapsed -= TIMER;

@@ -1,10 +1,11 @@
 mod component;
+mod resource;
 mod systems;
 
 use bevy::{
     app::{Plugin, Startup, Update},
-    asset::{Assets, Handle},
-    ecs::system::{Commands, ResMut, Resource},
+    asset::Assets,
+    ecs::system::{Commands, ResMut},
     pbr::StandardMaterial,
     render::color::Color,
     utils::default,
@@ -16,7 +17,10 @@ pub use self::{
     systems::{despawn_voxel::DespawnVoxelEvent, spawn_voxel::SpawnVoxelEvent},
 };
 // Systems can't be accessed by other modules
-use self::systems::{despawn_voxel::despawn_voxel, spawn_voxel::spawn_voxel};
+use self::{
+    resource::{voxel_adjacency::VoxelAdjacency, voxel_material_cache::VoxelMaterialCache},
+    systems::{despawn_voxel::despawn_voxel, spawn_voxel::spawn_voxel},
+};
 
 pub const VOXEL_COLOURS: &[Color] = &[
     Color::GOLD,
@@ -31,18 +35,11 @@ impl Plugin for VoxelPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_event::<SpawnVoxelEvent>()
             .add_event::<DespawnVoxelEvent>()
+            .init_resource::<VoxelAdjacency>()
             .add_systems(Startup, build_voxel_material_cache)
             .add_systems(Update, spawn_voxel)
             .add_systems(Update, despawn_voxel);
     }
-}
-
-#[derive(Resource)]
-pub struct VoxelMaterialCache {
-    gold: Handle<StandardMaterial>,
-    silver: Handle<StandardMaterial>,
-    copper: Handle<StandardMaterial>,
-    jade: Handle<StandardMaterial>,
 }
 
 fn build_voxel_material_cache(
