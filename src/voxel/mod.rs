@@ -2,8 +2,12 @@ mod component;
 mod systems;
 
 use bevy::{
-    app::{Plugin, Update},
+    app::{Plugin, Startup, Update},
+    asset::{Assets, Handle},
+    ecs::system::{Commands, ResMut, Resource},
+    pbr::StandardMaterial,
     render::color::Color,
+    utils::default,
 };
 
 // Components and events can be accessed by other modules
@@ -27,7 +31,53 @@ impl Plugin for VoxelPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_event::<SpawnVoxelEvent>()
             .add_event::<DespawnVoxelEvent>()
+            .add_systems(Startup, build_voxel_material_cache)
             .add_systems(Update, spawn_voxel)
             .add_systems(Update, despawn_voxel);
     }
+}
+
+#[derive(Resource)]
+pub struct VoxelMaterialCache {
+    gold: Handle<StandardMaterial>,
+    silver: Handle<StandardMaterial>,
+    copper: Handle<StandardMaterial>,
+    jade: Handle<StandardMaterial>,
+}
+
+fn build_voxel_material_cache(
+    mut commands: Commands,
+    mut standard_material: ResMut<Assets<StandardMaterial>>,
+) {
+    let gold = standard_material.add(StandardMaterial {
+        base_color: crate::voxel::VOXEL_COLOURS[0],
+        metallic: 1.,
+        reflectance: 0.75,
+        ..default()
+    });
+    let silver = standard_material.add(StandardMaterial {
+        base_color: crate::voxel::VOXEL_COLOURS[1],
+        metallic: 0.975,
+        reflectance: 0.725,
+        ..default()
+    });
+    let copper = standard_material.add(StandardMaterial {
+        base_color: crate::voxel::VOXEL_COLOURS[2],
+        metallic: 0.9,
+        reflectance: 0.7,
+        ..default()
+    });
+    let jade = standard_material.add(StandardMaterial {
+        base_color: crate::voxel::VOXEL_COLOURS[3],
+        metallic: 0.25,
+        reflectance: 0.25,
+        ..default()
+    });
+
+    commands.insert_resource(VoxelMaterialCache {
+        gold,
+        silver,
+        copper,
+        jade,
+    })
 }

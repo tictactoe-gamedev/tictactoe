@@ -1,18 +1,21 @@
 use bevy::{
-    asset::{AssetServer, Assets},
+    asset::AssetServer,
     ecs::{
         event::{Event, EventReader},
         system::{Commands, Query, Res, ResMut, SystemParam},
     },
     math::Vec3,
-    pbr::{PbrBundle, StandardMaterial},
+    pbr::PbrBundle,
     transform::components::Transform,
     utils::default,
 };
 use bevy_rand::{prelude::ChaCha8Rng, resource::GlobalEntropy};
 use rand_core::RngCore;
 
-use crate::{config::WorldConfiguration, voxel::Voxel};
+use crate::{
+    config::WorldConfiguration,
+    voxel::{Voxel, VoxelMaterialCache},
+};
 
 #[derive(Event)]
 pub struct SpawnVoxelEvent;
@@ -21,7 +24,7 @@ pub struct SpawnVoxelEvent;
 pub struct SpawnVoxelSystemParam<'w, 's> {
     world_config: Res<'w, WorldConfiguration>,
     asset_server: Res<'w, AssetServer>,
-    standard_materials: ResMut<'w, Assets<StandardMaterial>>,
+    voxel_materials: Res<'w, VoxelMaterialCache>,
     entropy: ResMut<'w, GlobalEntropy<ChaCha8Rng>>,
     voxels: Query<'w, 's, (&'static Transform, &'static Voxel)>,
 }
@@ -48,7 +51,6 @@ pub fn spawn_voxel(
             let x = (voxel_count % row_count) + system_param.world_config.x_min;
             let y = voxel_count / (row_count * col_count);
             let z = ((voxel_count / row_count) % col_count) + system_param.world_config.z_min;
-            bevy::log::warn!("{voxel_count} {x} {y} {z}");
 
             if y >= max_height {
                 break;
@@ -56,10 +58,12 @@ pub fn spawn_voxel(
 
             let mesh_handle = system_param.asset_server.load("cube.gltf#Mesh0/Primitive0");
 
-            let material_handle = system_param.standard_materials.add(StandardMaterial {
-                base_color: crate::voxel::VOXEL_COLOURS[voxel_type as usize],
-                ..default()
-            });
+            let material_handle = match voxel_type {
+                0 => system_param.voxel_materials.gold.clone(),
+                1 => system_param.voxel_materials.silver.clone(),
+                2 => system_param.voxel_materials.copper.clone(),
+                _ => system_param.voxel_materials.jade.clone(),
+            };
 
             commands.spawn((
                 PbrBundle {
