@@ -10,11 +10,12 @@ use bevy::{
         event::{EventReader, EventWriter},
         query::With,
         schedule::IntoSystemConfigs,
-        system::{Commands, Query, Res, ResMut},
+        system::{Commands, Local, Query, Res, ResMut},
     },
     math::Vec3,
     pbr::{AmbientLight, PointLight, PointLightBundle},
     render::color::Color,
+    time::Time,
     transform::components::Transform,
     utils::default,
     DefaultPlugins,
@@ -22,12 +23,11 @@ use bevy::{
 #[cfg(feature = "with-inspector")]
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use bevy_rand::{plugin::EntropyPlugin, prelude::ChaCha8Rng};
-use config::WorldConfigurationChanged;
-use voxel::VoxelPlugin;
+use voxel::SpawnVoxelEvent;
 
 use crate::{
-    config::WorldConfiguration,
-    voxel::{Voxel, VoxelEvents},
+    config::{WorldConfiguration, WorldConfigurationChanged},
+    voxel::{DespawnVoxelEvent, Voxel, VoxelPlugin},
 };
 
 fn main() {
@@ -48,12 +48,14 @@ fn main() {
             );
     }
 
-    app.add_systems(Startup, create_camera).run();
+    app.add_systems(Startup, create_camera)
+        .add_systems(Update, spawn_voxels_on_timer)
+        .run();
 }
 
 fn create_camera(mut commands: Commands) {
     let camera_and_light_transform =
-        Transform::from_xyz(15., 15., 15.).looking_at(Vec3::ZERO, Vec3::Y);
+        Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
 
     // Camera in 3D space.
     commands.spawn(Camera3dBundle {
@@ -77,6 +79,19 @@ fn create_camera(mut commands: Commands) {
     });
 }
 
+fn spawn_voxels_on_timer(
+    time: Res<Time>,
+    mut elapsed: Local<f64>,
+    mut event_writer: EventWriter<SpawnVoxelEvent>,
+) {
+    const TIMER: f64 = 0.125;
+    *elapsed += time.delta_seconds_f64();
+    if *elapsed >= TIMER {
+        *elapsed -= TIMER;
+        event_writer.send(SpawnVoxelEvent);
+    }
+}
+
 #[cfg(feature = "with-inspector")]
 fn on_world_config_changed(
     mut world_config: ResMut<WorldConfiguration>,
@@ -98,7 +113,7 @@ fn cull_outside_world_bounds(
     world_config: Res<WorldConfiguration>,
     voxels: Query<(Entity, &Transform), With<Voxel>>,
     world_changed: EventReader<WorldConfigurationChanged>,
-    mut event: EventWriter<VoxelEvents>,
+    mut event: EventWriter<DespawnVoxelEvent>,
 ) {
     if !world_changed.is_empty() {
         event.send_batch(voxels.iter().filter_map(|(ent, transf)| {
@@ -107,7 +122,7 @@ fn cull_outside_world_bounds(
                 || transf.translation.z < world_config.z_min as f32
                 || transf.translation.z > world_config.z_max as f32
             {
-                Some(VoxelEvents::DespawnVoxel(ent))
+                Some(DespawnVoxelEvent(ent))
             } else {
                 None
             }

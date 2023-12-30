@@ -50,10 +50,10 @@ impl WorldConfiguration {
 impl Default for WorldConfiguration {
     fn default() -> Self {
         Self {
-            x_min: -10,
-            x_max: 10,
-            z_min: -10,
-            z_max: 10,
+            x_min: -4,
+            x_max: 4,
+            z_min: -4,
+            z_max: 4,
         }
     }
 }
