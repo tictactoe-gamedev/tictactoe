@@ -4,13 +4,13 @@ use bevy::{
         event::{Event, EventReader},
         system::{Commands, Query, Res, ResMut, SystemParam},
     },
-    math::Vec3,
+    math::{Vec3, Vec4},
     pbr::PbrBundle,
     transform::components::Transform,
     utils::default,
 };
 use bevy_rand::{prelude::ChaCha8Rng, resource::GlobalEntropy};
-use rand_core::RngCore;
+use rand::distributions::Distribution;
 
 use crate::{
     config::WorldConfiguration,
@@ -47,7 +47,6 @@ pub fn spawn_voxel(
         };
 
         for _event in event_reader.read() {
-            let voxel_type = system_param.entropy.next_u32() % 4;
             let x = (voxel_count % row_count) + system_param.world_config.x_min;
             let y = voxel_count / (row_count * col_count);
             let z = ((voxel_count / row_count) % col_count) + system_param.world_config.z_min;
@@ -55,6 +54,44 @@ pub fn spawn_voxel(
             if y >= max_height {
                 break;
             }
+
+            let voxel_type = {
+                let adjacent = [
+                    (x - 1, y, z),
+                    (x + 1, y, z),
+                    (x, y - 1, z),
+                    (x, y + 1, z),
+                    (x, y, z - 1),
+                    (x, y, z + 1),
+                ];
+                let weights = system_param
+                    .voxels
+                    .iter()
+                    .filter(|(_, vox)| adjacent.contains(vox.position()))
+                    .map(|(_, vox)| match vox.voxel_type() {
+                        0 => Vec4::from_array([0.4, 0.1, 0.1, 0.4]),
+                        1 => Vec4::from_array([0.05, 0.5, 0.05, 0.4]),
+                        2 => Vec4::from_array([0.05, 0.05, 0.7, 0.2]),
+                        _ => Vec4::from_array([0.1, 0.1, 0.1, 0.7]),
+                    })
+                    .fold(Vec4::splat(1.), |accum, cur| accum * cur);
+                match rand::distributions::WeightedIndex::new(weights.to_array()) {
+                    Ok(distribution) => {
+                        if let Ok(idx) =
+                            u32::try_from(distribution.sample(&mut *system_param.entropy))
+                        {
+                            idx
+                        } else {
+                            bevy::log::error!("Failed to cast usize index to u32.");
+                            return;
+                        }
+                    }
+                    Err(err) => {
+                        bevy::log::error!("Failed to create weighted index distribution. '{err}'");
+                        return;
+                    }
+                }
+            };
 
             let mesh_handle = system_param.asset_server.load("cube.gltf#Mesh0/Primitive0");
 

@@ -16,6 +16,10 @@ impl Voxel {
         }
     }
 
+    pub fn position(&self) -> &(i32, i32, i32) {
+        &self.position
+    }
+
     pub fn voxel_type(&self) -> &u32 {
         &self.voxel_type
     }
