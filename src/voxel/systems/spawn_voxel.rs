@@ -36,8 +36,8 @@ pub fn spawn_voxel(
 ) {
     if !event_reader.is_empty() {
         let row_count = system_param.world_config.x_max - system_param.world_config.x_min;
+        let max_height = system_param.world_config.y_max - system_param.world_config.y_min;
         let col_count = system_param.world_config.z_max - system_param.world_config.z_min;
-        let max_height = 3;
 
         let mut voxel_count = if let Ok(count) = i32::try_from(system_param.voxels.iter().count()) {
             count

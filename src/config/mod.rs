@@ -29,6 +29,16 @@ pub struct WorldConfiguration {
         feature = "with-inspector",
         inspector(min = -100, max = 100)
     )]
+    pub y_min: i32,
+    #[cfg_attr(
+        feature = "with-inspector",
+        inspector(min = -100, max = 100)
+    )]
+    pub y_max: i32,
+    #[cfg_attr(
+        feature = "with-inspector",
+        inspector(min = -100, max = 100)
+    )]
     pub z_min: i32,
     #[cfg_attr(
         feature = "with-inspector",
@@ -42,6 +52,10 @@ impl WorldConfiguration {
         self.x_min.abs_diff(self.x_max + 1)
     }
 
+    pub fn world_height(&self) -> u32 {
+        self.y_min.abs_diff(self.y_max + 1)
+    }
+
     pub fn world_width(&self) -> u32 {
         self.z_min.abs_diff(self.z_max + 1)
     }
@@ -52,6 +66,8 @@ impl Default for WorldConfiguration {
         Self {
             x_min: -4,
             x_max: 4,
+            y_min: 0,
+            y_max: 9,
             z_min: -4,
             z_max: 4,
         }
