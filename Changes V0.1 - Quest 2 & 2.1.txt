@@ -1,9 +1,0 @@
-Removed Start method in FinecraftGod.cs
-Reduced lines of code Vector3 universeSize instead of universeSizeX, Y, Z
-Added totalVoxelCount
-Changed if statement for checking totalVoxelCount exceeding maxVoxelCount (there's no case it can exceed, only be the same)
-Refactored universeSize to Vector3 and changed universeSizeX, Y, Z accordingly (rounding the float amounts to an int)
-Removed switch and used Initialize method instead (with typeRandom and amountRandom parameters)
-Shortened Voxel class for properties and member variables
-Moved the count for each Voxel in the Voxel class and added the switch for counting each Voxel in the Initialize method
-Changed the Cube (prefab) dimensions from 0.2 to 1
