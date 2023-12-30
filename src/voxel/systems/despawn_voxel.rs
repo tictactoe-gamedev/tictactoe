@@ -1,13 +1,16 @@
-use bevy::ecs::{event::EventReader, system::Commands};
+use bevy::ecs::{
+    entity::Entity,
+    event::{Event, EventReader},
+    system::Commands,
+};
 
-use crate::voxel::VoxelEvents;
+#[derive(Event)]
+pub struct DespawnVoxelEvent(pub Entity);
 
-pub fn despawn_voxel(mut commands: Commands, mut voxel_events: EventReader<VoxelEvents>) {
+pub fn despawn_voxel(mut commands: Commands, mut voxel_events: EventReader<DespawnVoxelEvent>) {
     for voxel_event in voxel_events.read() {
-        if let VoxelEvents::DespawnVoxel(ent) = voxel_event {
-            if let Some(mut entity) = commands.get_entity(*ent) {
-                entity.despawn();
-            };
-        }
+        if let Some(mut entity) = commands.get_entity(voxel_event.0) {
+            entity.despawn();
+        };
     }
 }
