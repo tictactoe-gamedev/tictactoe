@@ -6,7 +6,7 @@ public class FinecraftGod : MonoBehaviour
     public static FinecraftGod Instance { get; private set; } // ensure only one FinecraftGod exists
     public static int TotalVoxelCount {  get; private set; }
 
-    [SerializeField] private Voxel voxelPrefab;
+    [SerializeField] private Voxel[] voxelPrefabs;
     [SerializeField] private Vector3 worldDimensions = new Vector3(5, 1, 3);
     [SerializeField] private int maxVoxels = 20;
     [SerializeField] private float noSpawnProbability = 0.1f;   // Chance of not spawning a voxel, adjustable in the Inspector
@@ -76,7 +76,7 @@ public class FinecraftGod : MonoBehaviour
             }
         }
         // After filling up one Y level, moves to the next level
-        currentYLevel = (currentYLevel + 1) % heightLevelsToProcess;
+        currentYLevel += 1;
     }
 
     void DecideAndCreateVoxel(Vector3Int position)
@@ -89,7 +89,7 @@ public class FinecraftGod : MonoBehaviour
 
     private Voxel InstantiateVoxel(Vector3Int position, Voxel.VoxelType voxelType)
     {
-        Voxel voxelScript = Instantiate(voxelPrefab, position, Quaternion.identity); // spawns voxel at the random position without any rotation applied to the voxel object
+        Voxel voxelScript = Instantiate(voxelPrefabs[(int)voxelType], position, Quaternion.identity); // spawns voxel at the random position without any rotation applied to the voxel object
 
         if (voxelScript)
         {

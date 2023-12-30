@@ -123,85 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &519937431
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.6306628
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.024456497
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.122319
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      propertyPath: m_Name
-      value: geo_crazycube
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 519937433}
-  m_SourcePrefab: {fileID: 100100000, guid: 08783a0424158f64796c406ac6816de9, type: 3}
---- !u!1 &519937432 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 08783a0424158f64796c406ac6816de9, type: 3}
-  m_PrefabInstance: {fileID: 519937431}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &519937433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519937432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcf55cdfb0c727e48a13a8e8a74598ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  amount: 10
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,9 +338,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48f21cfa92f287a4ea7916930ac5ccae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  voxelPrefab: {fileID: 519937432}
-  worldDimensions: {x: 25, y: 4, z: 25}
-  maxVoxels: 7500
+  voxelPrefabs:
+  - {fileID: 5574409304485032677, guid: d6597f555227bea4faadc9597cdece7a, type: 3}
+  - {fileID: 5574409304485032677, guid: 1ddc8e4336cfb6246a51b1271d8adebf, type: 3}
+  - {fileID: 5574409304485032677, guid: 72b2cb431a9f8384c8609301f99b0624, type: 3}
+  - {fileID: 5574409304485032677, guid: c12ca06f9ded5f0489eac841091d7fba, type: 3}
+  worldDimensions: {x: 12, y: 4, z: 12}
+  maxVoxels: 100
   noSpawnProbability: 0.1
   heightLevelsToProcess: 4
   minVoxelAmount: 1
@@ -470,5 +395,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 963194228}
   - {fileID: 705507995}
-  - {fileID: 519937431}
   - {fileID: 1901771175}
