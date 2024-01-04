@@ -3,6 +3,7 @@ mod voxel;
 
 use bevy::{
     app::{App, Startup, Update},
+    asset::AssetServer,
     core_pipeline::core_3d::Camera3dBundle,
     ecs::{
         change_detection::DetectChanges,
@@ -12,9 +13,10 @@ use bevy::{
         schedule::IntoSystemConfigs,
         system::{Commands, Local, Query, Res, ResMut},
     },
-    math::Vec3,
+    math::{Quat, Vec3},
     pbr::{AmbientLight, PointLight, PointLightBundle},
     render::color::Color,
+    scene::SceneBundle,
     time::Time,
     transform::components::Transform,
     utils::default,
@@ -63,6 +65,7 @@ fn main() -> std::io::Result<()> {
 
     // Systems
     app.add_systems(Startup, create_camera)
+        .add_systems(Startup, spawn_fox)
         .add_systems(Update, spawn_voxels_on_timer)
         .run();
 
@@ -114,6 +117,19 @@ fn spawn_voxels_on_timer(
         *elapsed -= TIMER;
         event_writer.send(SpawnVoxelEvent);
     }
+}
+
+fn spawn_fox(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let scene = asset_server.load("Fox.gltf#Scene0");
+    commands.spawn(SceneBundle {
+        scene,
+        transform: Transform {
+            translation: Vec3::from_array([0., 1., 0.]),
+            rotation: Quat::from_rotation_y(std::f32::consts::PI),
+            scale: Vec3::splat(1. / 32.),
+        },
+        ..default()
+    });
 }
 
 #[cfg(feature = "with-inspector")]
