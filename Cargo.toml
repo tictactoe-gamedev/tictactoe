@@ -21,3 +21,6 @@ bevy_rand = { version = "0.4", features = ["rand_chacha"] }
 bevy-inspector-egui = { version = "0.21", optional = true }
 
 rand = "0.8.5"
+
+serde = "1.0.194"
+toml = "0.8.8"

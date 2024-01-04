@@ -6,8 +6,9 @@ use bevy::{
 use bevy_inspector_egui::{
     inspector_options::InspectorOptions, inspector_options::ReflectInspectorOptions,
 };
+use serde::Deserialize;
 
-#[derive(Debug, Clone, Copy, Resource, Reflect)]
+#[derive(Debug, Clone, Copy, Resource, Reflect, Deserialize)]
 #[reflect(Resource)]
 #[cfg_attr(
     feature = "with-inspector",

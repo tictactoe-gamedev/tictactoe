@@ -23,6 +23,7 @@ use bevy::{
 #[cfg(feature = "with-inspector")]
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use bevy_rand::{plugin::EntropyPlugin, prelude::ChaCha8Rng};
+use serde::Deserialize;
 use voxel::SpawnVoxelEvent;
 
 use crate::{
@@ -30,13 +31,25 @@ use crate::{
     voxel::{DespawnVoxelEvent, Voxel, VoxelPlugin},
 };
 
-fn main() {
+#[derive(Deserialize)]
+struct VoxelCraft {
+    world_configuration: WorldConfiguration,
+}
+
+fn main() -> std::io::Result<()> {
+    let voxelcraft = read_world_config()?;
+
     let mut app = App::new();
-    app.init_resource::<WorldConfiguration>()
-        .add_plugins(DefaultPlugins)
+
+    // Plugins
+    app.add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<ChaCha8Rng>::default())
         .add_plugins(VoxelPlugin);
 
+    // Resources
+    app.insert_resource(voxelcraft.world_configuration);
+
+    // Inspector feature plugins, events and systems
     #[cfg(feature = "with-inspector")]
     {
         app.add_event::<WorldConfigurationChanged>()
@@ -48,9 +61,19 @@ fn main() {
             );
     }
 
+    // Systems
     app.add_systems(Startup, create_camera)
         .add_systems(Update, spawn_voxels_on_timer)
         .run();
+
+    Ok(())
+}
+
+fn read_world_config() -> std::io::Result<VoxelCraft> {
+    let data = std::fs::read_to_string("voxelcraft.toml")?;
+    let voxelcraft =
+        toml::from_str(&data).map_err(|err| std::io::Error::new(std::io::ErrorKind::Other, err))?;
+    Ok(voxelcraft)
 }
 
 fn create_camera(mut commands: Commands) {
