@@ -76,7 +76,7 @@ pub fn spawn_voxel(
                                 y: y as f32,
                                 z: z as f32,
                             },
-                            scale: Vec3::splat(0.45),
+                            scale: Vec3::splat(0.5),
                             ..default()
                         },
                         ..default()

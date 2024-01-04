@@ -106,17 +106,8 @@ fn create_camera(mut commands: Commands) {
     });
 }
 
-fn spawn_voxels_on_timer(
-    time: Res<Time>,
-    mut elapsed: Local<f64>,
-    mut event_writer: EventWriter<SpawnVoxelEvent>,
-) {
-    const TIMER: f64 = 0.025;
-    *elapsed += time.delta_seconds_f64();
-    if *elapsed >= TIMER {
-        *elapsed -= TIMER;
-        event_writer.send(SpawnVoxelEvent);
-    }
+fn spawn_voxels_on_timer(mut event_writer: EventWriter<SpawnVoxelEvent>) {
+    event_writer.send(SpawnVoxelEvent);
 }
 
 #[cfg(feature = "with-inspector")]
