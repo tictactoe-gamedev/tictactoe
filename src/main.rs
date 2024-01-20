@@ -11,12 +11,11 @@ use bevy::{
         event::{EventReader, EventWriter},
         query::With,
         schedule::IntoSystemConfigs,
-        system::{Commands, Local, Query, Res, ResMut},
+        system::{Commands, Query, Res, ResMut},
     },
     math::Vec3,
-    pbr::{AmbientLight, PointLight, PointLightBundle},
+    pbr::{AmbientLight, DirectionalLight, DirectionalLightBundle},
     render::color::Color,
-    time::Time,
     transform::components::Transform,
     utils::default,
     DefaultPlugins,
@@ -80,24 +79,23 @@ fn read_world_config() -> std::io::Result<VoxelCraft> {
 }
 
 fn create_camera(mut commands: Commands) {
-    let camera_and_light_transform =
-        Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
-    let light_transform = Transform::from_xyz(0., 15., 0.).looking_at(Vec3::ZERO, Vec3::Z);
-
     // Camera in 3D space.
+    let camera_transform = Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
     commands.spawn(Camera3dBundle {
-        transform: camera_and_light_transform,
+        transform: camera_transform,
         ..default()
     });
 
     // Light up the scene.
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            intensity: 1000.0,
-            range: 100.0,
+    // let light_transform = Transform::from_xyz(0., 15., 0.).looking_at(Vec3::ZERO, Vec3::Z);
+    commands.spawn(DirectionalLightBundle {
+        directional_light: DirectionalLight {
+            color: Color::WHITE,
+            illuminance: 25000.,
+            shadows_enabled: true,
             ..default()
         },
-        transform: light_transform,
+        transform: camera_transform,
         ..default()
     });
     commands.insert_resource(AmbientLight {
