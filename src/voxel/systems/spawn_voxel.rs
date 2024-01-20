@@ -72,9 +72,9 @@ pub fn spawn_voxel(
                         material: material_handle,
                         transform: Transform {
                             translation: Vec3 {
-                                x: x as f32,
-                                y: y as f32,
-                                z: z as f32,
+                                x: x as f32 + 0.5,
+                                y: y as f32 + 0.5,
+                                z: z as f32 + 0.5,
                             },
                             scale: Vec3::splat(0.5),
                             ..default()
