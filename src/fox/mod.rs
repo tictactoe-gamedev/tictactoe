@@ -6,6 +6,7 @@ use bevy::{
     asset::AssetServer,
     ecs::{
         entity::Entity,
+        schedule::IntoSystemConfigs,
         system::{Commands, Query, Res, ResMut},
     },
     hierarchy::{Children, HierarchyQueryExt},
@@ -30,7 +31,8 @@ pub struct FoxPlugin;
 impl Plugin for FoxPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_systems(Startup, spawn_fox)
-            .add_systems(Update, move_fox);
+            .add_systems(Update, move_fox)
+            .add_systems(Update, update_animation.after(move_fox));
     }
 }
 
@@ -66,14 +68,12 @@ fn spawn_fox(
 }
 
 fn move_fox(
-    mut foxes: Query<(Entity, &mut Fox, &mut Transform)>,
+    mut foxes: Query<(&mut Fox, &mut Transform)>,
     mut entropy: ResMut<GlobalEntropy<ChaCha8Rng>>,
-    mut animation_players: Query<&mut AnimationPlayer>,
-    children: Query<&Children>,
     time: Res<Time>,
     world_config: Res<WorldConfiguration>,
 ) {
-    for (entity, mut fox, mut fox_transf) in foxes.iter_mut() {
+    for (mut fox, mut fox_transf) in foxes.iter_mut() {
         let fox_pos_target_diff = fox.target_position - fox_transf.translation;
 
         if fox_pos_target_diff.length() > FOX_SPEED {
@@ -94,25 +94,28 @@ fn move_fox(
                 fox.target_position =
                     Vec3::from_array([new_target_x as f32, 1.0, new_target_z as f32]);
                 fox.time_from_last_action_taken = 0.;
+            }
+        }
+    }
+}
 
-                if let Some(child_that_is_animation_player) = children
-                    .iter_descendants(entity)
-                    .find(|child| animation_players.contains(*child))
-                {
-                    if let Ok(mut animation_player) =
-                        animation_players.get_mut(child_that_is_animation_player)
-                    {
-                        animation_player
-                            .play(fox.walking_animation_clip_handle.clone_weak())
-                            .repeat();
-                    }
-                }
-            } else if let Some(child) = children
-                .iter_descendants(entity)
-                .find(|child| animation_players.contains(*child))
-            {
-                if let Ok(mut animation_player) = animation_players.get_mut(child) {
-                    animation_player
+fn update_animation(
+    foxes: Query<(Entity, &Fox, &Transform)>,
+    mut animation_players: Query<&mut AnimationPlayer>,
+    children: Query<&Children>,
+) {
+    for (entity, fox, transform) in foxes.iter() {
+        if let Some(child_that_is_animation_player) = children
+            .iter_descendants(entity)
+            .find(|child| animation_players.contains(*child))
+        {
+            if let Ok(mut player) = animation_players.get_mut(child_that_is_animation_player) {
+                if fox.target_position.distance(transform.translation) > FOX_SPEED {
+                    player
+                        .play(fox.walking_animation_clip_handle.clone_weak())
+                        .repeat();
+                } else {
+                    player
                         .play(fox.standing_animation_clip_handle.clone_weak())
                         .repeat();
                 }
