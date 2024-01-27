@@ -1,0 +1,8 @@
+[world_configuration]
+x_min=-15
+x_max=15
+y_min=0
+y_max=1
+z_min=-15
+z_max=15
+max_fox_count=5

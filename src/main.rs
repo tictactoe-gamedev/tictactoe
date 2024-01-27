@@ -1,4 +1,5 @@
 mod config;
+mod fox;
 mod voxel;
 
 use bevy::{
@@ -10,12 +11,11 @@ use bevy::{
         event::{EventReader, EventWriter},
         query::With,
         schedule::IntoSystemConfigs,
-        system::{Commands, Local, Query, Res, ResMut},
+        system::{Commands, Query, Res, ResMut},
     },
     math::Vec3,
-    pbr::{AmbientLight, PointLight, PointLightBundle},
+    pbr::{AmbientLight, DirectionalLight, DirectionalLightBundle},
     render::color::Color,
-    time::Time,
     transform::components::Transform,
     utils::default,
     DefaultPlugins,
@@ -23,6 +23,8 @@ use bevy::{
 #[cfg(feature = "with-inspector")]
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use bevy_rand::{plugin::EntropyPlugin, prelude::ChaCha8Rng};
+use fox::FoxPlugin;
+use serde::Deserialize;
 use voxel::SpawnVoxelEvent;
 
 use crate::{
@@ -30,13 +32,26 @@ use crate::{
     voxel::{DespawnVoxelEvent, Voxel, VoxelPlugin},
 };
 
-fn main() {
-    let mut app = App::new();
-    app.init_resource::<WorldConfiguration>()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(EntropyPlugin::<ChaCha8Rng>::default())
-        .add_plugins(VoxelPlugin);
+#[derive(Deserialize)]
+struct VoxelCraft {
+    world_configuration: WorldConfiguration,
+}
 
+fn main() -> std::io::Result<()> {
+    let voxelcraft = read_world_config()?;
+
+    let mut app = App::new();
+
+    // Plugins
+    app.add_plugins(DefaultPlugins)
+        .add_plugins(EntropyPlugin::<ChaCha8Rng>::default())
+        .add_plugins(VoxelPlugin)
+        .add_plugins(FoxPlugin);
+
+    // Resources
+    app.insert_resource(voxelcraft.world_configuration);
+
+    // Inspector feature plugins, events and systems
     #[cfg(feature = "with-inspector")]
     {
         app.add_event::<WorldConfigurationChanged>()
@@ -48,30 +63,39 @@ fn main() {
             );
     }
 
+    // Systems
     app.add_systems(Startup, create_camera)
         .add_systems(Update, spawn_voxels_on_timer)
         .run();
+
+    Ok(())
+}
+
+fn read_world_config() -> std::io::Result<VoxelCraft> {
+    let data = std::fs::read_to_string("voxelcraft.toml")?;
+    let voxelcraft =
+        toml::from_str(&data).map_err(|err| std::io::Error::new(std::io::ErrorKind::Other, err))?;
+    Ok(voxelcraft)
 }
 
 fn create_camera(mut commands: Commands) {
-    let camera_and_light_transform =
-        Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
-    let light_transform = Transform::from_xyz(0., 15., 0.).looking_at(Vec3::ZERO, Vec3::Z);
-
     // Camera in 3D space.
+    let camera_transform = Transform::from_xyz(-15., 15., -15.).looking_at(Vec3::ZERO, Vec3::Y);
     commands.spawn(Camera3dBundle {
-        transform: camera_and_light_transform,
+        transform: camera_transform,
         ..default()
     });
 
     // Light up the scene.
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            intensity: 1000.0,
-            range: 100.0,
+    // let light_transform = Transform::from_xyz(0., 15., 0.).looking_at(Vec3::ZERO, Vec3::Z);
+    commands.spawn(DirectionalLightBundle {
+        directional_light: DirectionalLight {
+            color: Color::WHITE,
+            illuminance: 25000.,
+            shadows_enabled: true,
             ..default()
         },
-        transform: light_transform,
+        transform: camera_transform,
         ..default()
     });
     commands.insert_resource(AmbientLight {
@@ -80,17 +104,8 @@ fn create_camera(mut commands: Commands) {
     });
 }
 
-fn spawn_voxels_on_timer(
-    time: Res<Time>,
-    mut elapsed: Local<f64>,
-    mut event_writer: EventWriter<SpawnVoxelEvent>,
-) {
-    const TIMER: f64 = 0.025;
-    *elapsed += time.delta_seconds_f64();
-    if *elapsed >= TIMER {
-        *elapsed -= TIMER;
-        event_writer.send(SpawnVoxelEvent);
-    }
+fn spawn_voxels_on_timer(mut event_writer: EventWriter<SpawnVoxelEvent>) {
+    event_writer.send(SpawnVoxelEvent);
 }
 
 #[cfg(feature = "with-inspector")]

@@ -6,8 +6,9 @@ use bevy::{
 use bevy_inspector_egui::{
     inspector_options::InspectorOptions, inspector_options::ReflectInspectorOptions,
 };
+use serde::Deserialize;
 
-#[derive(Debug, Clone, Copy, Resource, Reflect)]
+#[derive(Debug, Clone, Copy, Resource, Reflect, Deserialize)]
 #[reflect(Resource)]
 #[cfg_attr(
     feature = "with-inspector",
@@ -45,6 +46,8 @@ pub struct WorldConfiguration {
         inspector(min = -100, max = 100)
     )]
     pub z_max: i32,
+    #[cfg_attr(feature = "with-inspector", inspector(min = 0, max = 100))]
+    pub max_fox_count: u32,
 }
 
 impl WorldConfiguration {
@@ -70,6 +73,7 @@ impl Default for WorldConfiguration {
             y_max: 9,
             z_min: -4,
             z_max: 4,
+            max_fox_count: 1,
         }
     }
 }
